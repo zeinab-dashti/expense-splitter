@@ -1,0 +1,2 @@
+Alice 10 Alice,Bob
+alice 4 Bob
