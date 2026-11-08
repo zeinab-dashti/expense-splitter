@@ -1,0 +1,4 @@
+# payer amount participants
+Alice 60    Alice,Bob,Carol   # dinner
+Bob   30.50 Alice,Bob         # taxi
+Carol 100   Alice,Bob,Carol,Dave  # groceries
