@@ -136,3 +136,32 @@ Smaller items:
 Decision: I kept everything exactly as generated.
 Maven installed on my machine: no. I never mentioned Maven. It came from the constitution's one-command build rule, which came from my sentence about tests. The plan then listed Maven 3.9 or later as a prerequisite, so the implementation step needs it installed first.  
 Errors or surprises in the session: no errors. The surprises are the ones listed above.  
+
+## Step 5: Tasks
+
+Command I typed: `/speckit-tasks`
+
+Result: `tasks.md`, 166 lines, 30 tasks in six phases: setup (2), foundational (5), one phase per user story (8, 5 and 6) and polish (4). Every task has an ID and a file path. Tests come before implementation inside each story.
+
+What it added that I did not ask for:
+- A foundational phase (Money, InputException, Expense, Settlement) that no user story owns.
+- A fixed-seed property test (`new Random(42)`, at least 200 iterations) for the settlement rules.
+- Polish tasks: a README, a traceability check against the plan, and a grep for `float` and `double` in the main code.
+- Parallel markers on tasks and a parallel example.
+
+Decisions made without asking me:
+- Story 1 uses a simple two-pointer settlement that Story 2 replaces with the greedy one. The reply flagged this as a choice I could change.
+- Stories 2 and 3 edit the same files as Story 1, so they run in order.
+- Exact error strings for every kind of invalid input.
+
+What it caught that the plan step did not: research.md says Alice nets +6.67 in the 10.00 example and data-model.md says +6.66. The tasks Notes section flags the mismatch and follows data-model.md (+666). I had not mentioned it anywhere.
+
+What it did not catch:
+- The edge-case line in spec.md that says the payer is owed the full amount when the payer is not a sharer. T008 tests Alice +666 for 10.00, which follows FR-007 and contradicts that line. The task list does not mention the conflict.
+- SC-003 (under 2 minutes) has no task and no test.
+- Story 2 is titled "Fewest payments", but the property test only checks at most N-1 lines. The greedy method meets that limit and does not guarantee the fewest.
+
+Surprises: T015, T020, T026 and T030 all run `mvn verify`. I do not have Maven installed, so I need it before the implement step.
+
+Errors or surprises in the session: no errors. The surprises are the ones listed above.  
+Decision: I kept tasks.md exactly as generated.
