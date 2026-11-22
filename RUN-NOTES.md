@@ -192,3 +192,8 @@ Surprises: the report found problems that the earlier steps had produced and pas
 
 Errors or surprises in the session: no errors. The surprises are the ones listed above.  
 Decision: I changed nothing. I left every finding in place before implementing so I can see whether they reach the code.
+
+## Before Step 7: installing Maven
+
+The plan listed Maven 3.9 or later as a prerequisite, and I did not have it. `winget install Apache.Maven` found no package, so I downloaded the binary zip, unzipped it into a folder I created and added it to my PATH by hand. `mvn -v` then reported Maven 3.10.2 on Java 21.0.13.
+
