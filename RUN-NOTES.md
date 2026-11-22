@@ -197,3 +197,26 @@ Decision: I changed nothing. I left every finding in place before implementing s
 
 The plan listed Maven 3.9 or later as a prerequisite, and I did not have it. `winget install Apache.Maven` found no package, so I downloaded the binary zip, unzipped it into a folder I created and added it to my PATH by hand. `mvn -v` then reported Maven 3.10.2 on Java 21.0.13.
 
+## Step 7: Implement
+
+Command I typed: `/speckit-implement`, in a fresh conversation.
+
+Result: all 30 tasks ticked in tasks.md. `mvn clean verify` passed 46 tests and built `target/expense-splitter.jar`. The agent ran the 7 quickstart scenarios against the jar. The change is 7 source files, 4 test classes, a `pom.xml`, an extended README and a `.gitignore` entry for `target/`. I committed nothing during the run.
+
+What it did that I did not ask for:
+- It added build, run, input and exit-code sections to the one-line README.
+- It decided how money errors travel: `Money` throws `IllegalArgumentException` and the parser converts it to a line-numbered error. The task list left that choice open.
+
+What it caught: the T008 example in tasks.md was arithmetically wrong. It said 10.00 paid by Alice for Bob and Carol gives -333 each, but two sharers get 5.00 each. The agent said so in its final reply and tested a three-sharer case instead. Neither the tasks step nor the analyze step flagged it.
+
+What it left alone: spec.md and research.md are unchanged. The edge case in spec.md that says the payer is owed the full amount is still there while the code follows FR-007. Blank sharer fields are accepted because T023 told the agent to ignore them.
+
+What I ran myself:
+- Alice pays 10.00 for Bob, Carol and Dave: Bob, Carol and Dave each owe Alice 3.33. That is 9.99 in total, which follows FR-007. The edge case in spec.md still says the payer is owed the full amount.
+- `Alice, 30, Bob,,Carol`: accepted with no error. Bob and Carol each owe Alice 15.00 and the empty field was skipped as T023 specified. No requirement covers this and no test does either.
+- Settlement probe with three expenses: four payments (A owes D 1.00, A owes E 5.00, B owes C 4.00, B owes D 1.00). Three would be enough (B pays E 5.00, A pays C 4.00 and A pays D 2.00). The spec asks for at most N-1 lines and this output meets that limit, while the story is still titled "Fewest payments".
+
+Surprises: the agent corrected an example in its own task list and said so in its reply.
+
+Errors or surprises in the session: no errors. The surprises are the ones listed above.  
+Decision: I kept everything exactly as generated.
