@@ -8,6 +8,14 @@
 
 **Input**: User description: "Build a Java command-line tool that splits shared expenses. I give it who paid what and who shared each expense, and it prints who owes whom"
 
+## Clarifications
+
+### Session 2026-11-22
+
+- Q: When an amount can't be split evenly, who gets the extra cents? → A: The payer absorbs all leftover cents
+- Q: If the same person is listed twice as a sharer on one expense, what should the tool do? → A: Reject the line as invalid input, naming the line
+- Q: In what order should the settlement lines be printed? → A: Alphabetically by debtor, then by creditor
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - See who owes whom (Priority: P1)
@@ -58,7 +66,7 @@ When the input is malformed or inconsistent (missing amount, negative amount, ex
 
 ### Edge Cases
 
-- Amount does not divide evenly (e.g., 10.00 among 3 people): shares are calculated in whole cents and the leftover cents are assigned deterministically so the shares always add up exactly to the amount paid.
+- Amount does not divide evenly (e.g., 10.00 among 3 people): each sharer's share is the amount divided by the number of sharers, rounded down to whole cents, and the payer absorbs all leftover cents (e.g., Alice pays 10.00 shared by Alice, Bob and Carol: Bob and Carol each owe 3.33, Alice's own share is 3.34), so shares plus the payer's absorbed cents always add up exactly to the amount paid.
 - The payer is not among the sharers (paid for others only): the payer is owed the full amount by the sharers.
 - The payer is the only sharer: the expense has no effect on anyone's balance.
 - Zero-amount expense: accepted, no effect on balances.
@@ -67,6 +75,7 @@ When the input is malformed or inconsistent (missing amount, negative amount, ex
 - Same person's name written with different capitalization or surrounding spaces: treated as the same person.
 - Everyone already even: prints that nobody owes anything.
 - Amounts with more than two decimal places: rejected as invalid.
+- The same person listed more than once as a sharer on one expense (names compared per the case/whitespace rule): rejected as invalid.
 
 ## Requirements *(mandatory)*
 
@@ -78,12 +87,12 @@ When the input is malformed or inconsistent (missing amount, negative amount, ex
 - **FR-004**: The tool MUST print settlement lines of the form "<debtor> owes <creditor> <amount>", with amounts shown to exactly two decimal places.
 - **FR-005**: The tool MUST produce a settlement set in which following every line leaves every person with a zero balance.
 - **FR-006**: The tool MUST produce no more than N-1 settlement lines for N people with non-zero balances.
-- **FR-007**: The tool MUST use exact cent-level arithmetic; split shares MUST always sum exactly to the expense amount, with any leftover cents assigned in a deterministic way (the same input always gives the same output).
+- **FR-007**: The tool MUST use exact cent-level arithmetic; each sharer's share MUST be the expense amount divided by the number of sharers, rounded down to whole cents, and the payer MUST absorb all leftover cents (including when the payer is not a sharer), so that shares plus the payer's absorbed cents sum exactly to the expense amount (the same input always gives the same output).
 - **FR-008**: The tool MUST treat names as case-insensitive and ignore surrounding whitespace, displaying each person under the spelling first used.
-- **FR-009**: The tool MUST reject, with an error message naming the offending input line, any expense that has a missing or non-numeric amount, a negative amount, more than two decimal places, a missing payer, or no sharers.
+- **FR-009**: The tool MUST reject, with an error message naming the offending input line, any expense that has a missing or non-numeric amount, a negative amount, more than two decimal places, a missing payer, no sharers, or the same person listed more than once as a sharer.
 - **FR-010**: When input is invalid, the tool MUST print no settlement lines and MUST signal failure to the caller.
 - **FR-011**: When there is nothing to settle (no expenses, or all balances zero), the tool MUST print a clear "nobody owes anything" message and signal success.
-- **FR-012**: The tool MUST print the same settlement lines in the same order for the same input (stable ordering).
+- **FR-012**: The tool MUST print the same settlement lines in the same order for the same input, sorted alphabetically (case-insensitive) by debtor and then by creditor.
 - **FR-013**: Normal output MUST go to standard output; error messages MUST go to standard error.
 
 ### Key Entities
@@ -108,7 +117,7 @@ When the input is malformed or inconsistent (missing amount, negative amount, ex
 - All expenses are in a single currency; no currency symbols or conversion are handled.
 - Every expense is split equally among its sharers; unequal splits (percentages or fixed amounts) are out of scope for this version.
 - Input is provided as plain text, one expense per line (via a file, piped input, or typed input), with a simple human-readable format to be defined during planning.
-- Leftover cents from uneven splits are assigned in a fixed, predictable order (for example, to sharers in the order they are listed).
+- Leftover cents from uneven splits always stay with the payer (see FR-007).
 - The tool is single-run and stateless: nothing is saved between runs, and there are no user accounts.
 - Settlement minimization targets a small number of payments (at most N-1); finding the mathematically optimal minimum is not required.
 - Per the project constitution, the tool is a command-line program and every rule above is covered by an automated test.

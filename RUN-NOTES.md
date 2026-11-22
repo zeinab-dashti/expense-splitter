@@ -73,3 +73,35 @@ Two things I noticed when reading:
 
 Decision: I kept the spec exactly as generated.  
 Errors or surprises in the session: no errors. The surprises are the ones listed above.
+
+## Step 3: clarify
+
+Command I typed:
+/speckit-clarify
+
+Result: a new Clarifications section in spec.md plus edits in five other places. Nothing else changed. It asked 3 questions and stopped, although the limit is 5. Its reason: the remaining gaps were low-impact.
+
+Questions, its recommendation and my answer:
+1. Leftover cents. It recommended A (extra cents to sharers in listed order). I answered C: the payer absorbs the leftover cents.
+2. The same person listed twice as a sharer. It recommended A (count them once). I answered C: reject the line.
+3. Order of the settlement lines. It recommended A (largest debtor with largest creditor first). I answered B: alphabetical by debtor, then by creditor.
+It recommended option A all three times. I overrode all three.
+
+How I answered: I talked through each question with Claude in a separate chat before replying. Its suggestions were C, C and B, and those were my answers.
+
+Sections touched: Clarifications (new, one line per answer), Edge Cases (the leftover-cent line rewritten with a worked example, plus a new duplicate-sharer line), FR-007, FR-009, FR-012 and Assumptions. The Clarifications section records only my short answers and not the reasons.
+It added "case-insensitive" to the sort rule. I had not said that.
+
+Checklist: 16 of 16 still pass. It left the file alone, although the checklist's note says the cent ordering is left to planning. The agent called that note out of date itself. It left it because the command's instructions allow editing only the checkboxes.
+
+What it did not catch:
+- The Edge Cases line "the payer is not among the sharers: the payer is owed the full amount by the sharers" was not updated. It is false for an uneven split. Example: Dave pays 10.00 for Alice, Bob and Carol. Each sharer owes 3.33 and Dave absorbs 0.01, so Dave is owed 9.99. FR-007 says the payer absorbs the cents even when the payer is not a sharer. Story 1's third scenario ("paid minus own share") has the same problem.
+- The two issues I noted in Step 2 (SC-003 and the two meanings of N) are untouched.
+
+What it left open: how debtors are matched with creditors. In its words, the spec only says the output is sorted and the plan should choose a deterministic pairing. So the plan decides which payments the user sees, while Story 2 still promises "fewest payments". The input format is also left to planning.
+
+Surprises:
+- A question about print order carried a decision about the algorithm, because option A described the pairing method.
+- Its reason for recommending A on question 1 was that it matched its own earlier example. Its reason on question 2 was "the result users most likely expect", which is a guess about users.
+- One silent decision in the spec (names are case-insensitive) produced a later question (duplicates that differ by case).
+
