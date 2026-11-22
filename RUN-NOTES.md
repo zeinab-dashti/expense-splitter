@@ -165,3 +165,30 @@ Surprises: T015, T020, T026 and T030 all run `mvn verify`. I do not have Maven i
 
 Errors or surprises in the session: no errors. The surprises are the ones listed above.  
 Decision: I kept tasks.md exactly as generated.
+
+## Step 6: Analyze
+
+Command I typed: `/speckit-analyze`, in a fresh conversation.
+
+Result: a read-only report with 13 findings: 0 critical, 1 high, 7 medium and 5 low. It changed no files. Coverage was 17 of 18 requirements.
+
+What it caught that earlier steps missed:
+- The edge case in spec.md that says the payer is owed the full amount. FR-007 and the data model say otherwise for uneven splits (I1, high).
+- The +6.67 error in research.md (I2).
+- SC-003 has no task and no test (G2).
+
+What it found that I had not noticed:
+- Blank sharer fields such as `Bob,,Carol` would be silently accepted, and no test covers them (U1).
+- The tests for money and the parser are written against an exception type and a parser API that later tasks change (U2, I3).
+- None of the spec's worked examples are pinned in a test (G1).
+- The plan's `Expense` record has no `lineNumber`, while the data model and tasks do (I4).
+- The contract says "at minimum the first" error is reported, but the tasks report all of them (U3).
+
+What it said about the pipeline's own rules: the plan's "offline once dependencies are cached" may conflict with the constitution's no-network rule for tests. It called this arguably compliant (K1).
+
+Decisions made without asking me: none. It offered fixes and said it would not apply any without my approval.
+
+Surprises: the report found problems that the earlier steps had produced and passed, including the two spec and research contradictions. The tasks step had caught one of them (the +6.67 error) in its notes and still left research.md unfixed.
+
+Errors or surprises in the session: no errors. The surprises are the ones listed above.  
+Decision: I changed nothing. I left every finding in place before implementing so I can see whether they reach the code.
