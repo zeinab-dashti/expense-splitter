@@ -105,3 +105,34 @@ Surprises:
 - Its reason for recommending A on question 1 was that it matched its own earlier example. Its reason on question 2 was "the result users most likely expect", which is a guess about users.
 - One silent decision in the spec (names are case-insensitive) produced a later question (duplicates that differ by case).
 
+## Step 4: plan
+
+Command I typed:
+/speckit-plan
+
+Result: five new files under specs/001-expense-splitter/ (plan.md, research.md, data-model.md, contracts/cli.md and quickstart.md), 313 lines in total from a 123-line spec. It asked me no questions. spec.md and the checklist were not touched.
+
+Decisions it made for the points the spec left to planning:
+- Input format: one line per expense, comma-separated: payer, amount, sharer1, sharer2 and so on. A file argument or stdin.
+- Build: Maven with JUnit 5. mvn verify is the single command.
+- Settlement pairing: greedy, largest creditor with largest debtor. It says the true minimum is NP-hard in general and out of scope.
+- Exit codes 0, 1 and 2 and the error message forms. The spec only said "signal failure".
+- Structure: 7 source classes, 4 test classes and a pom.xml. The chat-only version was one 96-line file.
+
+The Dave contradiction: the plan follows FR-007 for a payer who is not a sharer (the payer absorbs the cents) and never mentions that the spec's Edge Cases line says the payer is owed the full amount. The Constitution Check passes without a note.
+
+Errors inside the plan documents:
+- research.md says Alice nets +6.67 in the 10.00 split between three. data-model.md says +6.66. +6.66 is right (10.00 minus her own 3.34). With +6.67 the balances would sum to 0.01. research.md also says its numbers match the example.
+
+Constitution Check:
+- Principle III passes with the qualifier "offline once dependencies are cached". The constitution says tests must not need network access, and Maven downloads dependencies on the first run.
+- The check says the traceability table maps each FR and edge case. SC-001, SC-003 and SC-004 are not mentioned by name anywhere in the plan files. The 2-minute entry-time criterion in SC-003 became "Performance Goals: Instant for the stated scale", so a person's time turned into machine speed and no test covers it.
+
+Smaller items:
+- The plan header says Branch 001-expense-splitter (git branch article-1-first-spec). No git branch has that name. The spec header says the feature branch is article-1-first-spec.
+- The CLI contract says all invalid lines may be reported and at minimum the first. The spec does not say which, so a test cannot pin it.
+- Quickstart scenario 6 reads expenses.txt, and no step creates that file.
+
+Decision: I kept everything exactly as generated.
+Maven installed on my machine: no. I never mentioned Maven. It came from the constitution's one-command build rule, which came from my sentence about tests. The plan then listed Maven 3.9 or later as a prerequisite, so the implementation step needs it installed first.  
+Errors or surprises in the session: no errors. The surprises are the ones listed above.  
